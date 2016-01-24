@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<title>Pizza vs. Memory Leaks</title>
+<body>
+
+<style>
+  body {
+    background-color: #ffffcc;
+    color: #000;
+    font-size: 30px;
+    text-align: center;
+  }
+
+  img {
+    image-rendering: pixelated;
+    height: 100px;
+    padding: 5px;
+    cursor: pointer;
+  }
+
+  .pizza {
+    margin-bottom: 5px;
+  }
+</style>
+
+  <div class="slices-eaten">
+    Pizza vs. Memory Leaks!
+  </div>
+
+  <div>
+    <button onclick="createPizza()">Make a pizza!</button>
+  </div>
+
+  <script>
+    var pizzas = [];
+    var slicesEaten = [];
+
+    function createPizza() {
+      var pizza = document.createElement("div");
+      pizza.className = "pizza";
+      pizza.slices = [];
+      pizza.secondsOld = 0;
+      pizza.leakyData = new Array(10000000).join("Pizza");
+      pizzas.push(pizza);
+
+      startPizzaClock(pizza);
+
+      for (var i = 0; i < 8; i++) {
+        pizza.slices.push(addSliceToPizza(pizza));
+      }
+
+      var body = document.getElementsByTagName("body")[0];
+      body.appendChild(pizza);
+    }
+
+    function startPizzaClock(pizza) {
+      var clock = document.createElement("div");
+      clock.className = "clock";
+      clock.innerText = "Fresh pizza!";
+      pizza.appendChild(clock);
+
+      window.setInterval(function() {
+        pizza.secondsOld += 1;
+        clock.innerText = "Pizza is " + pizza.secondsOld + " seconds old.";
+      }, 1000);
+    }
+
+    function addSliceToPizza(pizza) {
+      var slice = document.createElement("img");
+      slice.src = "data:image/png;base64,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";
+      slice.pizza = pizza;
+      slice.leakyData = new Array(1000000).join("Slice");
+
+      pizza.appendChild(slice);
+
+      slice.addEventListener("click", function() {
+        eatSlice(this);
+      });
+
+      return slice;
+    }
+
+    function eatSlice(slice) {
+      slice.pizza.removeChild(slice);
+      slicesEaten.push(slice);
+      updateSlicesEaten(slicesEaten.length);
+
+      var pizza = slice.pizza;
+      pizza.slices = pizza.slices.filter(function(freshSlice) { return freshSlice !== slice });
+
+      if (pizza.slices.length === 0) {
+        pizza.removeChild(pizza.querySelector('.clock'));
+        pizzas = pizzas.filter(function(freshPizza) { return freshPizza !== pizza });
+      }
+    }
+
+    function updateSlicesEaten(numberOfSlices) {
+      document.getElementsByClassName("slices-eaten")[0].innerText = numberOfSlices + " slices were eaten.";
+    }
+  </script>
+</body>
