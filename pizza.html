@@ -58,6 +58,8 @@
       clock.innerText = "Fresh pizza!";
       pizza.appendChild(clock);
 
+      // Leak alert! We don't call clearInterval() on this timer when the pizza
+      // is fully eaten, which means the pizza object is retained forever.
       window.setInterval(function() {
         pizza.secondsOld += 1;
         clock.innerText = "Pizza is " + pizza.secondsOld + " seconds old.";
@@ -81,6 +83,9 @@
 
     function eatSlice(slice) {
       slice.pizza.removeChild(slice);
+
+      // Leak alert! By adding slice to the slicesEaten array, we're keeping
+      // a reference to the slice object even though we don't need it anymore.
       slicesEaten.push(slice);
       updateSlicesEaten(slicesEaten.length);
 
@@ -88,6 +93,10 @@
       pizza.slices = pizza.slices.filter(function(freshSlice) { return freshSlice !== slice });
 
       if (pizza.slices.length === 0) {
+        // Leak alert! We're removing the clock, but we're leaving the pizza
+        // DOM node in the page, and that's what is taking up all the memory.
+        // Maybe we should remove the pizza from the DOM too?
+        // Hint: grab the body element using "document.getElementsByTagName('body')[0]".
         pizza.removeChild(pizza.querySelector('.clock'));
         pizzas = pizzas.filter(function(freshPizza) { return freshPizza !== pizza });
       }
